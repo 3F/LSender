@@ -1,0 +1,18 @@
+LSender - https://github.com/3F/LSender
+_ _ _ _ _ _ _ _ _ _ 
+
+
+
+[1.14] 2019.09.??
+
+    * First public release of the LSender project. 
+      
+      Ascetic aggregative repeater for loggers etc.
+      https://github.com/3F/LSender
+            
+      Previous changes can be found in:
+      https://github.com/3F/vsSolutionBuildEvent
+      https://github.com/3F/MvsSln
+      https://github.com/3F/Conari
+      
+      The number was based on latest changes for LSender part from vsSolutionBuildEvent project.

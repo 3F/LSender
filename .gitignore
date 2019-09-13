@@ -1,5 +1,7 @@
 # Specific
 
+/LSenderTest/Appveyor.TestLogger*
+
 # ...
 
 ## Ignore Visual Studio temporary files, build results, and
