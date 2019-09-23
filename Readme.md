@@ -12,7 +12,9 @@ Ascetic aggregative repeater for loggers etc.
 
 ## Where is used
 
-SobaScript, MvsSln, Conari, vsSolutionBuildEvent, ...
+SobaScript, E-MSBuild, MvsSln, Conari, vsSolutionBuildEvent, ...
+
+https://github.com/3F
 
 ## License
 

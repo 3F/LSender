@@ -19,8 +19,8 @@
 
     Platforms: $(TargetFrameworks)
 
-    Used in SobaScript, MvsSln, Conari, vsSolutionBuildEvent, ...
-    https://github.com/3F/LSender
+    Used in SobaScript, E-MSBuild, MvsSln, Conari, vsSolutionBuildEvent, ...
+    https://github.com/3F
 
     =======================================
     gnt /p:ngpackages="LSender/$(Version)"
@@ -34,7 +34,7 @@
     <PackageProjectUrl>https://github.com/3F/LSender</PackageProjectUrl>
     <RepositoryUrl>https://github.com/3F/LSender</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <PackageTags>repeater aggregation log logger SobaScript E-MSBuild vsSBE SBE-Scripts LSender</PackageTags>
+    <PackageTags>repeater aggregation log logger SobaScript E-MSBuild vsSBE SBE-Scripts MvsSln Conari vsSolutionBuildEvent EvMSBuild LSender</PackageTags>
     <PackageReleaseNotes>https://github.com/3F/LSender/blob/master/changelog.txt</PackageReleaseNotes>
     <Authors>github.com/3F/LSender</Authors>
     <DocumentationFile>$(OutputPath)\$(AssemblyName).xml</DocumentationFile>
