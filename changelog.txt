@@ -1,7 +1,13 @@
 LSender - https://github.com/3F/LSender
 _ _ _ _ 
 
+[1.15] 2019.10.21
 
+    * NEW: Tracking via vector field (Vinf) inside MsgArgs.
+    * NEW: +`bool MsgArgs.At(params string[] map)`: Are there any suitable directions in the vector.
+    * NEW: +`bool MsgArgs.At(string name)`: Is there a suitable assembly in the vector.
+    * CHANGED: `Message` sealed class has been renamed to `MsgArgs`.
+    
 [1.14] 2019.09.23
 
     * First public release of the LSender project. 
