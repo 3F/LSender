@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;net40</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;net472;net40</TargetFrameworks>
     <RootNamespace>net.r_eg.LSender</RootNamespace>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>key.snk</AssemblyOriginatorKeyFile>
@@ -17,10 +17,7 @@
     <Title>[ LSender ] Ascetic aggregative repeater for loggers etc.</Title>
     <Description>Ascetic aggregative repeater for loggers etc.
 
-    Platforms: $(TargetFrameworks)
-
     Used in SobaScript, E-MSBuild, MvsSln, Conari, vsSolutionBuildEvent, ...
-    https://github.com/3F
 
     =======================================
     gnt /p:ngpackages="LSender/$(Version)"
@@ -53,6 +50,10 @@
 
   <ItemGroup>
     <None Include="..\License.txt">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+    <None Include="..\3rd-party.txt">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
     </None>

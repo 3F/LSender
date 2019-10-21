@@ -14,8 +14,6 @@ Ascetic aggregative repeater for loggers etc.
 
 SobaScript, E-MSBuild, MvsSln, Conari, vsSolutionBuildEvent, ...
 
-https://github.com/3F
-
 ## License
 
 Licensed under the [MIT License](https://github.com/3F/LSender/blob/master/License.txt)

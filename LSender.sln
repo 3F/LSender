@@ -9,6 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LSenderTest", "LSenderTest\
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "root", "root", "{8AEDC5F4-3542-4CA9-B788-DC5A6F6159A1}"
 	ProjectSection(SolutionItems) = preProject
+		3rd-party.txt = 3rd-party.txt
 		License.txt = License.txt
 		Readme.md = Readme.md
 	EndProjectSection
