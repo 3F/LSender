@@ -23,40 +23,39 @@
  * THE SOFTWARE.
 */
 
-using System;
+using System.Diagnostics;
 
 namespace net.r_eg.Components
 {
-    [Serializable]
-    public sealed class Message: EventArgs
+    [DebuggerDisplay("{DbgDisplay}")]
+    public struct Vinf
     {
-        public readonly DateTime stamp;
+        /// <summary>
+        /// Full assembly identifer:
+        /// {Name}, Version={Version}, Culture={Culture}, PublicKeyToken={Token}
+        /// </summary>
+        public string asm;
 
-        public readonly string content;
+        /// <summary>
+        /// Assembly name.
+        /// </summary>
+        public string name;
 
-        public readonly Exception exception;
-
-        public readonly object data;
-
-        public readonly MsgLevel level;
-
-        public Message(string msg, MsgLevel level = MsgLevel.Debug)
+        internal Vinf(string asm)
+            : this()
         {
-            content     = msg;
-            this.level  = level;
-            stamp       = DateTime.Now;
+            if(asm == null) {
+                return;
+            }
+
+            this.asm    = asm;
+            name        = asm.Substring(0, asm.IndexOf(','));
         }
 
-        public Message(string msg, Exception ex, MsgLevel type = MsgLevel.Error)
-            : this(msg, type)
-        {
-            exception = ex;
-        }
+        #region DebuggerDisplay
 
-        public Message(string msg, object data, MsgLevel type = MsgLevel.Debug)
-            : this(msg, type)
-        {
-            this.data = data;
-        }
+        private string DbgDisplay => $"{name} -> {asm}";
+
+        #endregion
     }
 }

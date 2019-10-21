@@ -45,12 +45,12 @@ namespace net.r_eg.Components
         /// <summary>
         /// When message is raised.
         /// </summary>
-        public event EventHandler<Message> Raised;
+        public event EventHandler<MsgArgs> Raised;
 
         /// <summary>
         /// When the message was sent. Static alias.
         /// </summary>
-        public static event EventHandler<Message> Sent
+        public static event EventHandler<MsgArgs> Sent
         {
             add => _.Raised += value;
             remove => _.Raised -= value;
@@ -61,7 +61,7 @@ namespace net.r_eg.Components
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="msg"></param>
-        public static void Send(object sender, Message msg) => _.Raise(sender, msg);
+        public static void Send(object sender, MsgArgs msg) => _.Raise(sender, msg);
 
         /// <summary>
         /// Static alias for raising new message.
@@ -85,7 +85,7 @@ namespace net.r_eg.Components
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="msg"></param>
-        public static void Send<T>(Message msg) => _.Raise<T>(msg);
+        public static void Send<T>(MsgArgs msg) => _.Raise<T>(msg);
 
         /// <summary>
         /// To send new message with default sender as typeof(T).
@@ -114,7 +114,7 @@ namespace net.r_eg.Components
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="msg"></param>
-        public void Raise(object sender, Message msg) => Raised(sender ?? this, msg);
+        public void Raise(object sender, MsgArgs msg) => Raised(sender ?? this, msg);
 
         /// <summary>
         /// Raises new message.
@@ -131,14 +131,14 @@ namespace net.r_eg.Components
         /// <param name="msg"></param>
         /// <param name="level"></param>
         public void Raise(object sender, string msg, MsgLevel level)
-            => Raise(sender, new Message(msg, level));
+            => Raise(sender, new MsgArgs(msg, level));
 
         /// <summary>
         /// Raises new message with default sender as typeof(T).
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="msg"></param>
-        public void Raise<T>(Message msg) => Raise(typeof(T), msg);
+        public void Raise<T>(MsgArgs msg) => Raise(typeof(T), msg);
 
         /// <summary>
         /// Raises new message with default sender as typeof(T).
@@ -158,7 +158,7 @@ namespace net.r_eg.Components
         /// <summary>
         /// Revokes subscription for all listeners.
         /// </summary>
-        public void Revoke() => Raised = delegate (object sender, Message msg) { };
+        public void Revoke() => Raised = delegate (object sender, MsgArgs e) { };
 
         private LSender() => Revoke();
     }

@@ -11,7 +11,7 @@ namespace LSenderTest
         {
             string content = "Message1";
 
-            var msg = new Message(content, MsgLevel.Fatal);
+            var msg = new MsgArgs(content, MsgLevel.Fatal);
 
             Assert.Equal(content, msg.content);
             Assert.Equal(MsgLevel.Fatal, msg.level);
@@ -31,7 +31,7 @@ namespace LSenderTest
             }
             catch(ArgumentNullException ex)
             {
-                var msg = new Message(content, ex, MsgLevel.Trace);
+                var msg = new MsgArgs(content, ex, MsgLevel.Trace);
 
                 Assert.Equal(content, msg.content);
                 Assert.Equal(MsgLevel.Trace, msg.level);
@@ -50,7 +50,7 @@ namespace LSenderTest
 
             object data = new int[] { 2, 4, 6 };
 
-            var msg = new Message(content, data, MsgLevel.Warn);
+            var msg = new MsgArgs(content, data, MsgLevel.Warn);
 
             Assert.Equal(content, msg.content);
             Assert.Equal(MsgLevel.Warn, msg.level);
@@ -67,7 +67,7 @@ namespace LSenderTest
         [Fact]
         public void CtorTest4()
         {
-            var msg = new Message(null);
+            var msg = new MsgArgs(null);
 
             Assert.Null(msg.content);
             Assert.Equal(MsgLevel.Debug, msg.level);
@@ -79,7 +79,7 @@ namespace LSenderTest
         [Fact]
         public void CtorTest5()
         {
-            var msg = new Message(null, "data");
+            var msg = new MsgArgs(null, "data");
 
             Assert.Null(msg.content);
             Assert.Equal(MsgLevel.Debug, msg.level);
@@ -91,7 +91,7 @@ namespace LSenderTest
         [Fact]
         public void CtorTest6()
         {
-            var msg = new Message(null, new ArgumentOutOfRangeException());
+            var msg = new MsgArgs(null, new ArgumentOutOfRangeException());
 
             Assert.Null(msg.content);
             Assert.Equal(MsgLevel.Error, msg.level);
@@ -100,6 +100,36 @@ namespace LSenderTest
             Assert.NotNull(msg.exception);
 
             Assert.Equal(typeof(ArgumentOutOfRangeException), msg.exception.GetType());
+        }
+
+        [Fact]
+        public void TrackTest1()
+        {
+            var msg = new MsgArgs("");
+
+            Assert.True(msg.At("LSenderTest"));
+
+            Assert.False(msg.At(string.Empty));
+            Assert.False(msg.At(string.Empty, string.Empty));
+            Assert.False(msg.At(" "));
+            Assert.False(msg.At(new string[] { }));
+            Assert.False(msg.At());
+            Assert.False(msg.At((string[])null));
+            Assert.False(msg.At((string)null));
+        }
+
+        [Fact]
+        public void TrackTest2()
+        {
+            var msg = new MsgArgs("");
+
+            Assert.True(msg.At("LSenderTest", "System.Threading.Thread"));
+            Assert.True(msg.At("LSenderTest", "xunit.core"));
+            Assert.True(msg.At("xunit.core", "System.Threading.Thread"));
+
+            Assert.False(msg.At("System.Threading.Thread", "LSenderTest"));
+            Assert.False(msg.At("xunit.core", "LSenderTest"));
+            Assert.False(msg.At("System.Threading.Thread", "xunit.core"));
         }
     }
 }

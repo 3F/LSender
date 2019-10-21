@@ -13,14 +13,14 @@ namespace LSenderTest
             string content = "msg1";
 
             LSender.Sent += OnDefaultData1;
-            LSender.Sent += (object sender, Message e) => 
+            LSender.Sent += (object sender, MsgArgs e) => 
             {
                 Assert.Equal(content, e.content);
                 Assert.NotNull(e.data);
                 Assert.Equal(MsgLevel.Fatal, e.level);
             };
 
-            LSender.Send(this, new Message(content, 1, MsgLevel.Fatal));
+            LSender.Send(this, new MsgArgs(content, 1, MsgLevel.Fatal));
         }
 
         [Fact]
@@ -30,7 +30,7 @@ namespace LSenderTest
             string content = "msg2";
 
             LSender.Sent += OnDefaultData3;
-            LSender.Sent += (object sender, Message e) 
+            LSender.Sent += (object sender, MsgArgs e) 
                 => Assert.Equal(content, e.content);
 
             LSender.Send(this, content);
@@ -43,7 +43,7 @@ namespace LSenderTest
             string content = "msg3";
 
             LSender.Sent += OnDefaultData2;
-            LSender.Sent += (object sender, Message e) => 
+            LSender.Sent += (object sender, MsgArgs e) => 
             {
                 Assert.Equal(content, e.content);
                 Assert.Equal(MsgLevel.Error, e.level);
@@ -59,10 +59,10 @@ namespace LSenderTest
             string content = "msg4";
 
             LSender.Sent += OnDefaultData3;
-            LSender.Sent += (object sender, Message e) 
+            LSender.Sent += (object sender, MsgArgs e) 
                 => Assert.Equal(content, e.content);
 
-            LSender.Send<LSenderTest>(new Message(content));
+            LSender.Send<LSenderTest>(new MsgArgs(content));
         }
 
         [Fact]
@@ -72,7 +72,7 @@ namespace LSenderTest
             string content = "msg5";
 
             LSender.Sent += OnDefaultData3;
-            LSender.Sent += (object sender, Message e) 
+            LSender.Sent += (object sender, MsgArgs e) 
                 => Assert.Equal(content, e.content);
 
             LSender.Send<LSenderTest>(content);
@@ -85,7 +85,7 @@ namespace LSenderTest
             string content = "msg6";
 
             LSender.Sent += OnDefaultData2;
-            LSender.Sent += (object sender, Message e) =>
+            LSender.Sent += (object sender, MsgArgs e) =>
             {
                 Assert.Equal(content, e.content);
                 Assert.Equal(MsgLevel.Trace, e.level);
@@ -97,7 +97,7 @@ namespace LSenderTest
         [Fact]
         public void ResetTest1()
         {
-            LSender.Sent += (object sender, Message e) =>
+            LSender.Sent += (object sender, MsgArgs e) =>
             {
                 Assert.True(false);
             };
@@ -113,14 +113,14 @@ namespace LSenderTest
             string content = "msg1";
 
             LSender._.Raised += OnDefaultData1;
-            LSender._.Raised += (object sender, Message e) => 
+            LSender._.Raised += (object sender, MsgArgs e) => 
             {
                 Assert.Equal(content, e.content);
                 Assert.NotNull(e.data);
                 Assert.Equal(MsgLevel.Fatal, e.level);
             };
 
-            LSender._.Raise(this, new Message(content, 1, MsgLevel.Fatal));
+            LSender._.Raise(this, new MsgArgs(content, 1, MsgLevel.Fatal));
         }
 
         [Fact]
@@ -130,7 +130,7 @@ namespace LSenderTest
             string content = "msg2";
 
             LSender._.Raised += OnDefaultData3;
-            LSender._.Raised += (object sender, Message e) 
+            LSender._.Raised += (object sender, MsgArgs e) 
                 => Assert.Equal(content, e.content);
 
             LSender._.Raise(this, content);
@@ -143,7 +143,7 @@ namespace LSenderTest
             string content = "msg3";
 
             LSender._.Raised += OnDefaultData2;
-            LSender._.Raised += (object sender, Message e) => 
+            LSender._.Raised += (object sender, MsgArgs e) => 
             {
                 Assert.Equal(content, e.content);
                 Assert.Equal(MsgLevel.Error, e.level);
@@ -159,10 +159,10 @@ namespace LSenderTest
             string content = "msg4";
 
             LSender._.Raised += OnDefaultData3;
-            LSender._.Raised += (object sender, Message e) 
+            LSender._.Raised += (object sender, MsgArgs e) 
                 => Assert.Equal(content, e.content);
 
-            LSender._.Raise<LSenderTest>(new Message(content));
+            LSender._.Raise<LSenderTest>(new MsgArgs(content));
         }
 
         [Fact]
@@ -172,7 +172,7 @@ namespace LSenderTest
             string content = "msg5";
 
             LSender._.Raised += OnDefaultData3;
-            LSender._.Raised += (object sender, Message e) 
+            LSender._.Raised += (object sender, MsgArgs e) 
                 => Assert.Equal(content, e.content);
 
             LSender._.Raise<LSenderTest>(content);
@@ -185,7 +185,7 @@ namespace LSenderTest
             string content = "msg6";
 
             LSender._.Raised += OnDefaultData2;
-            LSender._.Raised += (object sender, Message e) =>
+            LSender._.Raised += (object sender, MsgArgs e) =>
             {
                 Assert.Equal(content, e.content);
                 Assert.Equal(MsgLevel.Trace, e.level);
@@ -197,7 +197,7 @@ namespace LSenderTest
         [Fact]
         public void RevokeTest1()
         {
-            LSender._.Raised += (object sender, Message e) =>
+            LSender._.Raised += (object sender, MsgArgs e) =>
             {
                 Assert.True(false);
             };
@@ -222,7 +222,7 @@ namespace LSenderTest
         {
             LSender.Reset();
 
-            LSender.Sent += (object sender, Message e) 
+            LSender.Sent += (object sender, MsgArgs e) 
                 => Assert.Equal(typeof(LSenderTest), sender.GetType());
 
             LSender.Send(this, string.Empty);
@@ -233,13 +233,31 @@ namespace LSenderTest
         {
             LSender.Reset();
 
-            LSender.Sent += (object sender, Message e) 
+            LSender.Sent += (object sender, MsgArgs e) 
                 => Assert.Equal(typeof(LSenderTest), sender);
 
             LSender.Send<LSenderTest>(string.Empty);
         }
 
-        private void OnDefaultData1(object sender, Message e)
+        [Fact]
+        public void IsInTest1()
+        {
+            LSender.Reset();
+
+            LSender.Sent += (object sender, MsgArgs e) => 
+            {
+                Assert.NotEmpty(e.vector);
+                Assert.True(e.At("LSenderTest"));
+                Assert.False(e.At("vsSolutionBuildEvent"));
+
+                Assert.False(e.At("LSenderTest", "vsSolutionBuildEvent"));
+                Assert.False(e.At("vsSolutionBuildEvent", "LSenderTest"));
+            };
+
+            LSender.Send(this, new MsgArgs(""));
+        }
+
+        private void OnDefaultData1(object sender, MsgArgs e)
         {
             var btype = typeof(LSenderTest);
             Assert.True(btype == sender.GetType() || btype == (Type)sender);
@@ -248,13 +266,13 @@ namespace LSenderTest
             Assert.True(e.stamp <= DateTime.Now);
         }
 
-        private void OnDefaultData2(object sender, Message e)
+        private void OnDefaultData2(object sender, MsgArgs e)
         {
             OnDefaultData1(sender, e);
             Assert.Null(e.data);
         }
 
-        private void OnDefaultData3(object sender, Message e)
+        private void OnDefaultData3(object sender, MsgArgs e)
         {
             OnDefaultData2(sender, e);
             Assert.Equal(MsgLevel.Debug, e.level);

@@ -32,14 +32,14 @@ namespace net.r_eg.Components
         /// <summary>
         /// When message is raised.
         /// </summary>
-        event EventHandler<Message> Raised;
+        event EventHandler<MsgArgs> Raised;
 
         /// <summary>
         /// Raises new message.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="msg"></param>
-        void Raise(object sender, Message msg);
+        void Raise(object sender, MsgArgs msg);
 
         /// <summary>
         /// Raises new message.
@@ -61,7 +61,7 @@ namespace net.r_eg.Components
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="msg"></param>
-        void Raise<T>(Message msg);
+        void Raise<T>(MsgArgs msg);
 
         /// <summary>
         /// Raises new message with default sender as typeof(T).
