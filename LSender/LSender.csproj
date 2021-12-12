@@ -13,7 +13,7 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>key.snk</AssemblyOriginatorKeyFile>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Copyright>Copyright (c) 2013-2019  Denis Kuzmin &lt; x-3F@outlook.com &gt; GitHub/3F</Copyright>
+    <Copyright>Copyright (c) 2016-2021  Denis Kuzmin &lt;x-3F@outlook.com&gt; github/3F</Copyright>
     <Title>[ LSender ] Ascetic aggregative repeater for loggers etc.</Title>
     <Description>Ascetic aggregative repeater for loggers etc.
 
