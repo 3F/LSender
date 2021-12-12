@@ -28,6 +28,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
+using System.Reflection.Emit;
+using System.Threading;
+using static net.r_eg.Components.Static.Polyfills;
 
 namespace net.r_eg.Components
 {
@@ -46,12 +49,14 @@ namespace net.r_eg.Components
 
         public readonly IEnumerable<Vinf> vector;
 
+        private static readonly Func<object> _GetStackFrames;
+
         /// <summary>
         /// Is there a suitable assembly in the vector.
         /// </summary>
         /// <param name="name">Assembly name.</param>
         /// <returns>True if it is.</returns>
-        public bool At(string name) => name == null ? false : vector.Any(v => v.name == name);
+        public bool At(string name) => name != null && vector.Any(v => v.name == name);
 
         /// <summary>
         /// Are there any suitable directions in the vector.
@@ -65,7 +70,7 @@ namespace net.r_eg.Components
             }
 
             int idx = 0;
-            foreach(var t in vector)
+            foreach(Vinf t in vector)
             {
                 if(t.name != map[idx]) {
                     continue;
@@ -79,12 +84,17 @@ namespace net.r_eg.Components
             return false;
         }
 
+        static MsgArgs()
+        {
+            _GetStackFrames = GenerateGetStackFrames();
+        }
+
         public MsgArgs(string msg, MsgLevel level = MsgLevel.Debug)
         {
             content     = msg;
             this.level  = level;
             stamp       = DateTime.Now;
-            vector      = Track(2);
+            vector      = Track();
         }
 
         public MsgArgs(string msg, Exception ex, MsgLevel type = MsgLevel.Error)
@@ -99,28 +109,124 @@ namespace net.r_eg.Components
             this.data = data;
         }
 
-        private Vinf[] Track(int skip)
+        private static ConstructorInfo IsStackFrameHelperValidCorlibV4(Type type)
         {
-            var rvector     = new Dictionary<string, Vinf>(12);
+            if(type == null) return null;
+
+            foreach(ConstructorInfo ctor in type.GetConstructors())
+            {
+                ParameterInfo[] args = ctor.GetParameters();
+                if(args.Length == 1 && args[0].ParameterType == typeof(Thread))
+                {
+                    return ctor;
+                }
+            }
+            return null;
+        }
+
+        private static Func<object> GenerateGetStackFrames()
+        {
+            // TODO: This implementation should be twice as fast as the original StackTrace instancing.
+            //       But actually we don't need even the default StackFrameHelper logic because only the vector matters in our case.
+            //       This however is not trivial task due to some CLR protections such as
+            //       ECall methods must be packaged into a system module when calling GetStackFramesInternal which in turn requires StackFrameHelper instance.
+            //       That's why we still wrap it inside StackFrameHelper class.
+            //       Thus, In case of improving performance, reimplement all StackFrameHelper's virtual methods to nothing etc.
+
+            Type tStackFrameHelper  = Type.GetType("System.Diagnostics.StackFrameHelper");
+            ConstructorInfo ctor    = IsStackFrameHelperValidCorlibV4(tStackFrameHelper);
+
+            if(ctor == null) return null;
+
+            MethodInfo mGetStackFramesInternal = typeof(StackTrace).GetMethod
+            (
+                "GetStackFramesInternal", 
+                BindingFlags.NonPublic | BindingFlags.Static
+            );
+
+            DynamicMethod m = new
+            (
+                nameof(_GetStackFrames), 
+                typeof(object), 
+                EmptyArray<Type>(), 
+                typeof(StackTrace), 
+                skipVisibility: true
+            );
+
+            ILGenerator il = m.GetILGenerator();
+            il.DeclareLocal(tStackFrameHelper);
+
+            il.Emit(OpCodes.Ldnull);
+            il.Emit(OpCodes.Newobj, ctor);
+            il.Emit(OpCodes.Stloc_0);
+
+            // StackTrace.GetStackFramesInternal(this, iSkip, fNeedFileInfo, exception);
+            il.Emit(OpCodes.Ldloc_0);
+
+            // NOTE: I don't want `ldc.i4.s` because `1F + int8` vs `1A` (4) but you need update this if changing iSkip.
+            //       Also note, too large values are dangerous due to incorrect results while too small values simply affect performance.
+            il.Emit(OpCodes.Ldc_I4_4);  // iSkip = 4; delegate calls + .ctor -> Track() -> ( ... ) 
+            il.Emit(OpCodes.Ldc_I4_0);  // fNeedFileInfo = false
+            il.Emit(OpCodes.Ldnull);    // exception = null
+
+            il.Emit(OpCodes.Call, mGetStackFramesInternal);
+            il.Emit(OpCodes.Ldloc_0);
+            il.Emit(OpCodes.Ret);
+
+            return m.CreateDelegate(typeof(Func<object>)) as Func<object>;
+        }
+
+        private IEnumerable<string> GetAsmFrames()
+        {
+            object frames = null;
+            if(_GetStackFrames != null)
+            {
+                object o = _GetStackFrames();
+
+                frames = o?.GetType().GetField
+                (
+                    "rgAssembly",
+                    BindingFlags.NonPublic | BindingFlags.Instance
+                )?
+                .GetValue(o);
+            }
+
+            if(frames != null)
+            {
+                foreach(var frame in (object[])frames)
+                {
+                    yield return ((Assembly)frame).FullName;
+                }
+            }
+            else
+            {
+                StackTrace strace = new(skipFrames: 3/*.ctor -> Track() -> ( ... )*/, fNeedFileInfo: false);
+                foreach(StackFrame frame in strace.GetFrames())
+                {
+                    MethodBase mb = frame.GetMethod();
+                    yield return mb?.DeclaringType?.Assembly.FullName
+                                        ?? mb?.Module.Assembly.FullName; // lambda, ~Anonymously Hosted DynamicMethods
+                }
+            }
+        }
+
+        private IEnumerable<Vinf> Track()
+        {
             string latest   = null;
             string current  = Assembly.GetExecutingAssembly().FullName;
 
-            foreach(var frame in new StackTrace(skip, false).GetFrames())
+            Dictionary<string, Vinf> rvector = new(capacity: 20);
+            foreach(string asm in GetAsmFrames())
             {
-                MethodBase mb = frame.GetMethod();
-                string asm = (mb.DeclaringType == null) ? mb.Module.Assembly.FullName // lambda, ~Anonymously Hosted DynamicMethods
-                                                        : mb.DeclaringType.Assembly.FullName;
-
                 if(asm != latest && asm != current && !rvector.ContainsKey(asm))
                 {
-                    var vinf = new Vinf(asm);
-                    rvector[asm] = vinf;
+                    rvector[asm] = new Vinf(asm);
                 }
 
                 latest = asm;
             }
 
-            return rvector.Select(v => v.Value).ToArray();
+            return rvector.Values;
         }
     }
 }

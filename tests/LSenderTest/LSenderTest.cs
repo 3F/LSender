@@ -95,6 +95,38 @@ namespace LSenderTest
         }
 
         [Fact]
+        public void SendVectorTest1()
+        {
+            LSender.Reset();
+
+            LSender.Sent += (object sender, MsgArgs e) =>
+            {
+                Assert.True(e.At("LSenderTest"));
+                Assert.True(e.At("DepC", "LSenderTest"));
+                Assert.True(e.At("DepC", "DepB", "LSenderTest"));
+                Assert.True(e.At("DepC", "DepB", "DepA", "LSenderTest"));
+            };
+
+            DepA.ClassA.SendStatic(string.Empty);
+            DepA.ClassA.SendInstance(string.Empty);
+        }
+
+        [Fact]
+        public void SendVectorTest2()
+        {
+            LSender.Reset();
+
+            LSender.Sent += (object sender, MsgArgs e) =>
+            {
+                Assert.True(e.At("LSenderTest"));
+                Assert.True(e.At("DepC", "LSenderTest"));
+            };
+
+            DepC.ClassC.SendStatic(string.Empty);
+            DepC.ClassC.SendInstance(string.Empty);
+        }
+
+        [Fact]
         public void ResetTest1()
         {
             LSender.Sent += (object sender, MsgArgs e) =>

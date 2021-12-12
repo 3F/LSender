@@ -34,14 +34,11 @@
     <DocumentationFile>$(OutputPath)\$(AssemblyName).xml</DocumentationFile>
     <PackageLicenseFile>License.txt</PackageLicenseFile>
     <NoWarn>1701;1702;CS1591</NoWarn>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' Or $(Configuration.Contains('DBG_')) Or $(Configuration.Contains('DCI_')) ">
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-  </PropertyGroup>
-
-  <PropertyGroup Condition=" '$(Configuration)' == 'Release' Or $(Configuration.Contains('REL_')) Or $(Configuration.Contains('RCI_')) ">
-    <DefineConstants />
+    <DefineConstants>DEBUG;TRACE;$(DefineConstants)</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup>
