@@ -1,6 +1,7 @@
 using System;
 using net.r_eg.Components;
 using Xunit;
+using static net.r_eg.Components.Static.Polyfills;
 
 namespace LSenderTest
 {
@@ -107,21 +108,37 @@ namespace LSenderTest
         {
             var msg = new MsgArgs("");
 
+#if LSR_FEATURE_S_VECTOR
+
             Assert.True(msg.At("LSenderTest"));
 
             Assert.False(msg.At(string.Empty));
             Assert.False(msg.At(string.Empty, string.Empty));
             Assert.False(msg.At(" "));
-            Assert.False(msg.At(new string[] { }));
+            Assert.False(msg.At(EmptyArray<string>()));
             Assert.False(msg.At());
             Assert.False(msg.At((string[])null));
             Assert.False(msg.At((string)null));
+
+#else
+            Assert.True(msg.At("LSenderTest"));
+
+            Assert.True(msg.At(string.Empty));
+            Assert.True(msg.At(string.Empty, string.Empty));
+            Assert.True(msg.At(" "));
+            Assert.True(msg.At(EmptyArray<string>()));
+            Assert.True(msg.At());
+            Assert.True(msg.At((string[])null));
+            Assert.True(msg.At((string)null));
+#endif
         }
 
         [Fact]
         public void TrackTest2()
         {
             MsgArgs msg = DepA.ClassA.GetMsgArgs(string.Empty);
+
+#if LSR_FEATURE_S_VECTOR
 
             Assert.True(msg.At("LSenderTest"));
             Assert.True(msg.At("DepC", "LSenderTest"));
@@ -134,6 +151,20 @@ namespace LSenderTest
             Assert.False(msg.At("LSenderTest", "DepC"));
             Assert.False(msg.At("DepB", "DepC", "LSenderTest"));
             Assert.False(msg.At("Dep", "LSenderTest"));
+
+#else
+            Assert.True(msg.At("LSenderTest"));
+            Assert.True(msg.At("DepC", "LSenderTest"));
+            Assert.True(msg.At("DepC", "DepB", "LSenderTest"));
+            Assert.True(msg.At("DepC", "DepB", "DepA", "LSenderTest"));
+
+            Assert.True(msg.At("DepC", "DepA", "LSenderTest"));
+            Assert.True(msg.At("DepC", "DepB", "LSenderTest"));
+
+            Assert.True(msg.At("LSenderTest", "DepC"));
+            Assert.True(msg.At("DepB", "DepC", "LSenderTest"));
+            Assert.True(msg.At("Dep", "LSenderTest"));
+#endif
         }
 
         [Fact]
@@ -141,12 +172,23 @@ namespace LSenderTest
         {
             MsgArgs msg = DepC.ClassC.GetMsgArgs(string.Empty);
 
+#if LSR_FEATURE_S_VECTOR
+
             Assert.True(msg.At("LSenderTest"));
             Assert.True(msg.At("DepC", "LSenderTest"));
 
             Assert.False(msg.At("LSenderTest", "DepC"));
             Assert.False(msg.At("DepC", "DepB", "LSenderTest"));
             Assert.False(msg.At("DepC", "DepB", "DepA", "LSenderTest"));
+
+#else
+            Assert.True(msg.At("LSenderTest"));
+            Assert.True(msg.At("DepC", "LSenderTest"));
+
+            Assert.True(msg.At("LSenderTest", "DepC"));
+            Assert.True(msg.At("DepC", "DepB", "LSenderTest"));
+            Assert.True(msg.At("DepC", "DepB", "DepA", "LSenderTest"));
+#endif
         }
     }
 }

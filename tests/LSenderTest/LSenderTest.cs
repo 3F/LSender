@@ -105,6 +105,16 @@ namespace LSenderTest
                 Assert.True(e.At("DepC", "LSenderTest"));
                 Assert.True(e.At("DepC", "DepB", "LSenderTest"));
                 Assert.True(e.At("DepC", "DepB", "DepA", "LSenderTest"));
+
+#if LSR_FEATURE_S_VECTOR
+                Assert.False(e.At("DepB", "DepC", "LSenderTest"));
+                Assert.False(e.At("DepA", "DepB", "LSenderTest"));
+#else
+                Assert.True(e.At("DepB", "DepC", "LSenderTest"));
+                Assert.True(e.At("DepA", "DepB", "LSenderTest"));
+#endif
+
+                Assert.True(e.At("DepB", "DepA", "LSenderTest"));
             };
 
             DepA.ClassA.SendStatic(string.Empty);
@@ -278,12 +288,23 @@ namespace LSenderTest
 
             LSender.Sent += (object sender, MsgArgs e) => 
             {
+#if LSR_FEATURE_S_VECTOR
+
                 Assert.NotEmpty(e.vector);
                 Assert.True(e.At("LSenderTest"));
                 Assert.False(e.At("vsSolutionBuildEvent"));
 
                 Assert.False(e.At("LSenderTest", "vsSolutionBuildEvent"));
                 Assert.False(e.At("vsSolutionBuildEvent", "LSenderTest"));
+
+#else
+                Assert.Empty(e.vector);
+                Assert.True(e.At("LSenderTest"));
+                Assert.True(e.At("vsSolutionBuildEvent"));
+
+                Assert.True(e.At("LSenderTest", "vsSolutionBuildEvent"));
+                Assert.True(e.At("vsSolutionBuildEvent", "LSenderTest"));
+#endif
             };
 
             LSender.Send(this, new MsgArgs(""));

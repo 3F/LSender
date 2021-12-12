@@ -27,7 +27,7 @@ using System.Diagnostics;
 
 namespace net.r_eg.Components
 {
-    [DebuggerDisplay("{DbgDisplay}")]
+    [DebuggerDisplay("{name} -> {asm}")]
     public struct Vinf
     {
         /// <summary>
@@ -41,21 +41,22 @@ namespace net.r_eg.Components
         /// </summary>
         public string name;
 
+#if LSR_FEATURE_S_VECTOR
+
         internal Vinf(string asm)
             : this()
         {
-            if(asm == null) {
-                return;
-            }
+            if(asm == null) return;
 
-            this.asm    = asm;
-            name        = asm.Substring(0, asm.IndexOf(','));
+            this.asm = asm;
+
+#if NETCOREAPP3_1_OR_GREATER
+            name = asm[..asm.IndexOf(',')];
+#else
+            name = asm.Substring(0, asm.IndexOf(','));
+#endif
         }
 
-        #region DebuggerDisplay
-
-        private string DbgDisplay => $"{name} -> {asm}";
-
-        #endregion
+#endif
     }
 }

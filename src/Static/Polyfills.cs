@@ -36,7 +36,9 @@ namespace net.r_eg.Components.Static
 
         public static T[] EmptyArray<T>() => _EmptyArray<T>.value;
 
+#pragma warning disable IDE1006 // handFace.jpg
         private static class _EmptyArray<T>
+#pragma warning restore IDE1006
         {
             public static readonly T[] value = new T[0];
         }

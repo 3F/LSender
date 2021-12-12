@@ -10,16 +10,76 @@ Ascetic aggregative repeater for loggers etc.
 
 [![Build history](https://buildstats.info/appveyor/chart/3Fs/lsender?buildCount=20&showStats=true)](https://ci.appveyor.com/project/3Fs/lsender/history)
 
-## Where is used
-
-SobaScript, E-MSBuild, MvsSln, Conari, vsSolutionBuildEvent, ...
-
-## License
-
-Licensed under the [MIT License](https://github.com/3F/LSender/blob/master/License.txt)
-
 ```r
 Copyright (c) 2016-2021 Denis Kuzmin <x-3F@outlook.com> github/3F
 ```
 
 [ 「 <sub>@</sub> ☕ 」 ](https://3F.github.io/Donation/)
+
+## Features
+
+### Control vectors
+
+```csharp
+LSender.Sent += (object sender, MsgArgs e) =>
+{
+    Assert.True(e.At("Module"));
+    Assert.True(e.At("DepC", "Module"));
+    Assert.True(e.At("DepC", "DepB", "Module"));
+    Assert.True(e.At("DepC", "DepB", "DepA", "Module"));
+
+    Assert.False(e.At("DepB", "DepC", "Module"));
+    Assert.False(e.At("DepA", "DepB", "Module"));
+
+    Assert.True(e.At("DepB", "DepA", "Module"));
+};
+```
+
+### Split within the domain
+
+It can also be splitted within the domain,
+
+```xml
+<PropertyGroup>
+  <LSenderExtIncSrc>..\LSender\src\</LSenderExtIncSrc>
+</PropertyGroup>
+<Import Project="$(LSenderExtIncSrc)src.targets" />
+```
+
+```xml
+<ItemGroup>
+  <ProjectReference Include="..\ModuleA\ClassA.csproj">
+    <Aliases>ModuleA,%(Aliases)</Aliases>
+  </ProjectReference>
+  <ProjectReference Include="..\ModuleB\ClassB.csproj">
+    <Aliases>ModuleB,%(Aliases)</Aliases>
+  </ProjectReference>
+</ItemGroup>
+```
+
+```csharp
+extern alias ModuleA;
+extern alias ModuleB;
+namespace UserCode
+{
+    class Program
+    {
+        static void Main()
+        {
+            // ModuleA.net.r_eg.Components.LSender
+            // ModuleB.net.r_eg.Components.LSender
+            // ...
+        }
+    }
+}
+```
+
+### Configure vectors
+
+```xml
+<PropertyGroup>
+  <DefineConstants>LSR_FEATURE_S_VECTOR;$(DefineConstants)</DefineConstants>
+  <LSenderExtIncSrc>..\LSender\src\</LSenderExtIncSrc>
+</PropertyGroup>
+<Import Project="$(LSenderExtIncSrc)src.targets" />
+```

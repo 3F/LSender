@@ -35,7 +35,7 @@ namespace net.r_eg.Components
     /// </summary>
     public sealed class LSender: ISender
     {
-        private static readonly Lazy<ISender> _lazy = new Lazy<ISender>(() => new LSender());
+        private static readonly Lazy<ISender> _lazy = new(() => new LSender());
 
         /// <summary>
         /// Thread-safe getting the instance of the LSender class.

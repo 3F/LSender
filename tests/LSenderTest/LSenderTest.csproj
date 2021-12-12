@@ -1,4 +1,5 @@
-<Project Sdk="Microsoft.NET.Sdk">
+<Project>
+  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" Condition="'$(TurnOffSdkImport)'!='true'" />
   <Import Project="..\..\common.props" />
 
   <PropertyGroup>
@@ -21,9 +22,14 @@
     </PackageReference>
   </ItemGroup>
 
+  <PropertyGroup>
+    <ProjectReferenceLSender Condition="'$(ProjectReferenceLSender)'==''">..\..\src\LSender.csproj</ProjectReferenceLSender>
+    <ProjectReferenceDepA Condition="'$(ProjectReferenceDepA)'==''">..\DepA\DepA.csproj</ProjectReferenceDepA>
+  </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\LSender.csproj" />
-    <ProjectReference Include="..\DepA\DepA.csproj" />
+    <ProjectReference Include="$(ProjectReferenceLSender)" />
+    <ProjectReference Include="$(ProjectReferenceDepA)" />
   </ItemGroup>
 
+  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" Condition="'$(TurnOffSdkImport)'!='true'" />
 </Project>

@@ -25,17 +25,21 @@
 
 using System;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
+using static net.r_eg.Components.Static.Polyfills;
+
+#if LSR_FEATURE_S_VECTOR
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Threading;
-using static net.r_eg.Components.Static.Polyfills;
+#endif
 
 namespace net.r_eg.Components
 {
     [Serializable]
-    public sealed class MsgArgs: EventArgs
+    public sealed class MsgArgs: EventArgs, ISerializable
     {
         public readonly DateTime stamp;
 
@@ -47,24 +51,50 @@ namespace net.r_eg.Components
 
         public readonly MsgLevel level;
 
+#if LSR_FEATURE_S_VECTOR
         public readonly IEnumerable<Vinf> vector;
-
         private static readonly Func<object> _GetStackFrames;
+#else
+        public readonly IEnumerable<Vinf> vector = EmptyArray<Vinf>();
+#endif
 
         /// <summary>
         /// Is there a suitable assembly in the vector.
         /// </summary>
         /// <param name="name">Assembly name.</param>
         /// <returns>True if it is.</returns>
-        public bool At(string name) => name != null && vector.Any(v => v.name == name);
+        public
+#if LSR_USER_CODE && !LSR_FEATURE_S_VECTOR
+#pragma warning disable CA1822 // Mark members as static
+#endif
+            bool At(string name)
+#if LSR_USER_CODE && !LSR_FEATURE_S_VECTOR
+#pragma warning restore CA1822
+#endif
+        {
+#if LSR_FEATURE_S_VECTOR
+            return name != null && vector.Any(v => v.name == name);
+#else
+            return true;
+#endif
+        }
 
         /// <summary>
         /// Are there any suitable directions in the vector.
         /// </summary>
         /// <param name="map">Map of directions.</param>
         /// <returns>True if inside.</returns>
-        public bool At(params string[] map)
+        public
+#if LSR_USER_CODE && !LSR_FEATURE_S_VECTOR
+#pragma warning disable CA1822 // Mark members as static
+#endif
+            bool At(params string[] map)
+#if LSR_USER_CODE && !LSR_FEATURE_S_VECTOR
+#pragma warning restore CA1822
+#endif
         {
+#if LSR_FEATURE_S_VECTOR
+
             if(map == null || map.Length < 1) {
                 return false;
             }
@@ -82,19 +112,45 @@ namespace net.r_eg.Components
             }
 
             return false;
+
+#else
+            return true;
+#endif
         }
+
+        public void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            if(info == null) throw new ArgumentNullException(nameof(info));
+
+            info.AddValue(nameof(stamp), stamp);
+            info.AddValue(nameof(content), content);
+            info.AddValue(nameof(level), level);
+            info.AddValue(nameof(exception), exception);
+            info.AddValue(nameof(data), data);
+
+#if LSR_FEATURE_S_VECTOR
+            info.AddValue(nameof(vector), vector);
+#endif
+        }
+
+#if LSR_FEATURE_S_VECTOR
 
         static MsgArgs()
         {
             _GetStackFrames = GenerateGetStackFrames();
         }
 
+#endif
+
         public MsgArgs(string msg, MsgLevel level = MsgLevel.Debug)
         {
             content     = msg;
             this.level  = level;
             stamp       = DateTime.Now;
-            vector      = Track();
+
+#if LSR_FEATURE_S_VECTOR
+            vector = Track();
+#endif
         }
 
         public MsgArgs(string msg, Exception ex, MsgLevel type = MsgLevel.Error)
@@ -108,6 +164,27 @@ namespace net.r_eg.Components
         {
             this.data = data;
         }
+
+        public MsgArgs(SerializationInfo info, StreamingContext context)
+        {
+            if(info == null) throw new ArgumentNullException(nameof(info));
+
+            stamp   = info.GetDateTime(nameof(stamp));
+            content = info.GetString(nameof(content));
+
+            level       = (MsgLevel)info.GetValue(nameof(level), typeof(MsgLevel));
+            exception   = (Exception)info.GetValue(nameof(exception), typeof(Exception));
+            data        = info.GetValue(nameof(data), typeof(object));
+
+#if LSR_FEATURE_S_VECTOR
+            vector = new List<Vinf>
+            (
+                (IEnumerable<Vinf>)info.GetValue(nameof(vector), typeof(IEnumerable<Vinf>))
+            );
+#endif
+        }
+
+#if LSR_FEATURE_S_VECTOR
 
         private static ConstructorInfo IsStackFrameHelperValidCorlibV4(Type type)
         {
@@ -176,7 +253,7 @@ namespace net.r_eg.Components
             return m.CreateDelegate(typeof(Func<object>)) as Func<object>;
         }
 
-        private IEnumerable<string> GetAsmFrames()
+        private static IEnumerable<string> GetAsmFrames()
         {
             object frames = null;
             if(_GetStackFrames != null)
@@ -210,7 +287,7 @@ namespace net.r_eg.Components
             }
         }
 
-        private IEnumerable<Vinf> Track()
+        private static IEnumerable<Vinf> Track()
         {
             string latest   = null;
             string current  = Assembly.GetExecutingAssembly().FullName;
@@ -228,5 +305,7 @@ namespace net.r_eg.Components
 
             return rvector.Values;
         }
+
+#endif
     }
 }

@@ -1,13 +1,19 @@
-<Project Sdk="Microsoft.NET.Sdk">
+<Project>
+  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" Condition="'$(TurnOffSdkImport)'!='true'" />
   <Import Project="..\..\common.props" />
 
   <PropertyGroup>
     <TargetFrameworks>$(LSenderTestTFM)</TargetFrameworks>
     <IsPackable>false</IsPackable>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <ProjectReferenceLSender Condition="'$(ProjectReferenceLSender)'==''">..\..\src\LSender.csproj</ProjectReferenceLSender>
+  </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\LSender.csproj" />
+    <ProjectReference Include="$(ProjectReferenceLSender)" />
   </ItemGroup>
 
+  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" Condition="'$(TurnOffSdkImport)'!='true'" />
 </Project>

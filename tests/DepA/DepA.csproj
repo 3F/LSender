@@ -1,4 +1,5 @@
-<Project Sdk="Microsoft.NET.Sdk">
+<Project>
+  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" Condition="'$(TurnOffSdkImport)'!='true'" />
   <Import Project="..\..\common.props" />
 
   <PropertyGroup>
@@ -6,8 +7,12 @@
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <ProjectReferenceDepB Condition="'$(ProjectReferenceDepB)'==''">..\DepB\DepB.csproj</ProjectReferenceDepB>
+  </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\DepB\DepB.csproj" />
+    <ProjectReference Include="$(ProjectReferenceDepB)" />
   </ItemGroup>
 
+  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" Condition="'$(TurnOffSdkImport)'!='true'" />
 </Project>

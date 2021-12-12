@@ -4,7 +4,7 @@ namespace DepC
 {
     public class ClassC
     {
-        public static MsgArgs GetMsgArgs(string msg) => new MsgArgs(msg);
+        public static MsgArgs GetMsgArgs(string msg) => new(msg);
 
         public static void SendStatic(string msg) => LSender.Send<ClassC>(msg);
 

@@ -1,4 +1,5 @@
-<Project Sdk="Microsoft.NET.Sdk">
+<Project>
+  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" Condition="'$(TurnOffSdkImport)'!='true'" />
   <Import Project="..\common.props" />
 
   <PropertyGroup>
@@ -7,8 +8,9 @@
   </PropertyGroup>
 
   <PropertyGroup>
+    <AssemblyName>LSender</AssemblyName>
     <TargetFrameworks>$(LSenderTFM)</TargetFrameworks>
-    <RootNamespace>net.r_eg.LSender</RootNamespace>
+    <RootNamespace>net.r_eg.Components</RootNamespace>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>key.snk</AssemblyOriginatorKeyFile>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
@@ -16,7 +18,12 @@
     <Title>Ascetic aggregative repeater for loggers etc.</Title>
     <Description>Ascetic aggregative repeater for loggers etc.
 
-    Used in SobaScript, E-MSBuild, MvsSln, Conari, vsSolutionBuildEvent, ...
+    - Configure and Control vectors;
+    - It can also be splitted within the domain;
+
+    https://github.com/3F/LSender
+
+    Used in SobaScript, E-MSBuild, vsSolutionBuildEvent, ...
 
     =======================================
     gnt /p:ngpackages="LSender/$(Version)"
@@ -33,12 +40,19 @@
     <Authors>github.com/3F/LSender</Authors>
     <DocumentationFile>$(OutputPath)\$(AssemblyName).xml</DocumentationFile>
     <PackageLicenseFile>License.txt</PackageLicenseFile>
-    <NoWarn>1701;1702;CS1591</NoWarn>
-    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+  <Import Project=".\src.targets" />
+
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug' Or $(Configuration.Contains('DBG_')) Or $(Configuration.Contains('DCI_'))">
+    <DefineConstants>DEBUG;TRACE;$(DefineConstants)</DefineConstants>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
   </PropertyGroup>
 
-  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' Or $(Configuration.Contains('DBG_')) Or $(Configuration.Contains('DCI_')) ">
-    <DefineConstants>DEBUG;TRACE;$(DefineConstants)</DefineConstants>
+  <PropertyGroup Condition="'$(Configuration)' == 'Release' Or '$(Configuration)' == 'PublicRelease' Or $(Configuration.Contains('REL_')) Or $(Configuration.Contains('RCI_'))">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -62,4 +76,5 @@
     </None>
   </ItemGroup>
 
+  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" Condition="'$(TurnOffSdkImport)'!='true'" />
 </Project>

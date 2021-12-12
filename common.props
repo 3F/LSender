@@ -16,10 +16,10 @@
     <NetStdTFM Condition="'$(SuppressNetStdTFM)' == 'true'"></NetStdTFM>
 
     <!-- .NET Core Support Policy: https://dotnet.microsoft.com/platform/support/policy/dotnet-core -->
-    <NetCoreTFM>netcoreapp3.1;net6</NetCoreTFM>
+    <NetCoreTFM>net6</NetCoreTFM>
 
-    <LSenderTFM>net40;net472;$(NetCoreTFM);$(NetStdTFM)</LSenderTFM>
-    <LSenderTFM Condition="'$(OsUnixLike)'=='true'">$(NetCoreTFM);$(NetStdTFM)</LSenderTFM>
+    <LSenderTFM>net40;net472;$(NetStdTFM)</LSenderTFM>
+    <LSenderTFM Condition="'$(OsUnixLike)'=='true'">$(NetStdTFM)</LSenderTFM>
     <LSenderTFM Condition="'$(OverrideLSenderTFM)'!=''">$(OverrideLSenderTFM)</LSenderTFM>
 
     <LSenderTestTFM>net472;$(NetCoreTFM)</LSenderTestTFM>
@@ -37,8 +37,12 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <Configurations>DBG_SDK10;DBG_SDK15;REL_SDK10;REL_SDK15;DCI_SDK10;DCI_SDK15;RCI_SDK10;RCI_SDK15</Configurations>
+    <Configurations>Debug;Release;PublicRelease</Configurations>
     <Configurations Condition="'$(OverrideLSenderConfigurations)'!=''">$(OverrideLSenderConfigurations)</Configurations>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <DefineConstants Condition="'$(LSenderDisableSVector)'!='true'">LSR_FEATURE_S_VECTOR;$(DefineConstants)</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup>

@@ -1,0 +1,25 @@
+<Project>
+
+  <PropertyGroup>
+    <NoWarn>1701;1702;CS1591;$(NoWarn)</NoWarn>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+
+
+  <PropertyGroup Condition="'$(LSenderExtIncSrc)'!=''">
+    <DefineConstants>LSR_USER_CODE;$(DefineConstants)</DefineConstants>
+    <LSenderSrcName Condition="'$(LSenderSrcName)'==''">LSender</LSenderSrcName>
+  </PropertyGroup>
+  <ItemGroup Condition="'$(LSenderExtIncSrc)'!=''">
+
+    <Compile Include="$(LSenderExtIncSrc)**\*.cs">
+      <Link>$(LSenderSrcName)\%(Directory)\%(Filename)%(Extension)</Link>
+    </Compile>
+
+    <None Include="$(LSenderExtIncSrc)..\License.txt" Link="$(LSenderSrcName)\%(Filename)%(Extension)" />
+    <None Include="$(LSenderExtIncSrc)..\3rd-party.txt" Link="$(LSenderSrcName)\%(Filename)%(Extension)" />
+    <None Include="$(LSenderExtIncSrc)..\.version" Link="$(LSenderSrcName)\%(Filename)%(Extension)" />
+
+  </ItemGroup>
+
+</Project>
