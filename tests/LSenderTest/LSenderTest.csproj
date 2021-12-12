@@ -1,11 +1,16 @@
 <Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="..\common.props" />
+  <Import Project="..\..\common.props" />
 
   <PropertyGroup>
     <TargetFrameworks>$(LSenderTestTFM)</TargetFrameworks>
     <IsPackable>false</IsPackable>
-    <Configurations>DBG_SDK10;DBG_SDK15;REL_SDK10;REL_SDK15;DCI_SDK10;DCI_SDK15;RCI_SDK10;RCI_SDK15</Configurations>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Appveyor.TestLogger.2.0.0\**" />
+    <EmbeddedResource Remove="Appveyor.TestLogger.2.0.0\**" />
+    <None Remove="Appveyor.TestLogger.2.0.0\**" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.0.0" />
@@ -17,7 +22,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\LSender\LSender.csproj" />
+    <ProjectReference Include="..\..\src\LSender.csproj" />
+    <ProjectReference Include="..\DepA\DepA.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,6 +1,6 @@
 # Specific
 
-/LSenderTest/Appveyor.TestLogger*
+Appveyor.TestLogger*
 
 # ...
 

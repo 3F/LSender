@@ -121,15 +121,32 @@ namespace LSenderTest
         [Fact]
         public void TrackTest2()
         {
-            var msg = new MsgArgs("");
+            MsgArgs msg = DepA.ClassA.GetMsgArgs(string.Empty);
 
-            Assert.True(msg.At("LSenderTest", "System.Threading.Thread"));
-            Assert.True(msg.At("LSenderTest", "xunit.core"));
-            Assert.True(msg.At("xunit.core", "System.Threading.Thread"));
+            Assert.True(msg.At("LSenderTest"));
+            Assert.True(msg.At("DepC", "LSenderTest"));
+            Assert.True(msg.At("DepC", "DepB", "LSenderTest"));
+            Assert.True(msg.At("DepC", "DepB", "DepA", "LSenderTest"));
 
-            Assert.False(msg.At("System.Threading.Thread", "LSenderTest"));
-            Assert.False(msg.At("xunit.core", "LSenderTest"));
-            Assert.False(msg.At("System.Threading.Thread", "xunit.core"));
+            Assert.True(msg.At("DepC", "DepA", "LSenderTest"));
+            Assert.True(msg.At("DepC", "DepB", "LSenderTest"));
+
+            Assert.False(msg.At("LSenderTest", "DepC"));
+            Assert.False(msg.At("DepB", "DepC", "LSenderTest"));
+            Assert.False(msg.At("Dep", "LSenderTest"));
+        }
+
+        [Fact]
+        public void TrackTest3()
+        {
+            MsgArgs msg = DepC.ClassC.GetMsgArgs(string.Empty);
+
+            Assert.True(msg.At("LSenderTest"));
+            Assert.True(msg.At("DepC", "LSenderTest"));
+
+            Assert.False(msg.At("LSenderTest", "DepC"));
+            Assert.False(msg.At("DepC", "DepB", "LSenderTest"));
+            Assert.False(msg.At("DepC", "DepB", "DepA", "LSenderTest"));
         }
     }
 }

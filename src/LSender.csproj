@@ -33,7 +33,6 @@
     <Authors>github.com/3F/LSender</Authors>
     <DocumentationFile>$(OutputPath)\$(AssemblyName).xml</DocumentationFile>
     <PackageLicenseFile>License.txt</PackageLicenseFile>
-    <Configurations>DBG_SDK10;DBG_SDK15;REL_SDK10;REL_SDK15;DCI_SDK10;DCI_SDK15;RCI_SDK10;RCI_SDK15</Configurations>
     <NoWarn>1701;1702;CS1591</NoWarn>
   </PropertyGroup>
 

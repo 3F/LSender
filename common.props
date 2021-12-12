@@ -37,6 +37,11 @@
   </PropertyGroup>
 
   <PropertyGroup>
+    <Configurations>DBG_SDK10;DBG_SDK15;REL_SDK10;REL_SDK15;DCI_SDK10;DCI_SDK15;RCI_SDK10;RCI_SDK15</Configurations>
+    <Configurations Condition="'$(OverrideLSenderConfigurations)'!=''">$(OverrideLSenderConfigurations)</Configurations>
+  </PropertyGroup>
+
+  <PropertyGroup>
     <IsNetCoreFamilyTarget>true</IsNetCoreFamilyTarget>
     <IsNetCoreFamilyTarget Condition="$(TargetFramework.StartsWith('net4')) == 'true'">false</IsNetCoreFamilyTarget>
   </PropertyGroup>

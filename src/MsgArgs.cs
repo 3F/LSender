@@ -107,7 +107,9 @@ namespace net.r_eg.Components
 
             foreach(var frame in new StackTrace(skip, false).GetFrames())
             {
-                var asm = frame.GetMethod().DeclaringType.Assembly.FullName;
+                MethodBase mb = frame.GetMethod();
+                string asm = (mb.DeclaringType == null) ? mb.Module.Assembly.FullName // lambda, ~Anonymously Hosted DynamicMethods
+                                                        : mb.DeclaringType.Assembly.FullName;
 
                 if(asm != latest && asm != current && !rvector.ContainsKey(asm))
                 {
