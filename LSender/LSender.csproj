@@ -1,20 +1,19 @@
 <Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\common.props" />
 
   <PropertyGroup>
     <Version>1.15.0</Version>
     <BuildInfoVSSBE></BuildInfoVSSBE>
-    <!-- <AssemblyVersion>0.0.1.0</AssemblyVersion> -->
-    <!-- <FileVersion>0.0.1.0</FileVersion> -->
   </PropertyGroup>
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;net472;net40</TargetFrameworks>
+    <TargetFrameworks>$(LSenderTFM)</TargetFrameworks>
     <RootNamespace>net.r_eg.LSender</RootNamespace>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>key.snk</AssemblyOriginatorKeyFile>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Copyright>Copyright (c) 2016-2021  Denis Kuzmin &lt;x-3F@outlook.com&gt; github/3F</Copyright>
-    <Title>[ LSender ] Ascetic aggregative repeater for loggers etc.</Title>
+    <Title>Ascetic aggregative repeater for loggers etc.</Title>
     <Description>Ascetic aggregative repeater for loggers etc.
 
     Used in SobaScript, E-MSBuild, MvsSln, Conari, vsSolutionBuildEvent, ...
@@ -22,8 +21,6 @@
     =======================================
     gnt /p:ngpackages="LSender/$(Version)"
     ================== https://github.com/3F/GetNuTool
-
-    Build info:
 
     $(BuildInfoVSSBE)
     </Description>
@@ -48,39 +45,24 @@
     <DefineConstants />
   </PropertyGroup>
 
+  <PropertyGroup>
+    <NoDefaultExcludes>true</NoDefaultExcludes> <!-- NU5119: ..\.version -->
+  </PropertyGroup>
+
   <ItemGroup>
-    <None Include="..\License.txt">
-      <Pack>True</Pack>
-      <PackagePath></PackagePath>
-    </None>
-    <None Include="..\3rd-party.txt">
-      <Pack>True</Pack>
-      <PackagePath></PackagePath>
-    </None>
-    <None Include="..\Readme.md">
-      <Pack>True</Pack>
-      <PackagePath></PackagePath>
-    </None>
-    <None Include="..\changelog.txt">
-      <Pack>True</Pack>
-      <PackagePath></PackagePath>
-    </None>
-    <None Include="..\.version">
-      <Pack>True</Pack>
-      <PackagePath></PackagePath>
-    </None>
+    <None Include="..\License.txt" Pack="true" PackagePath="" />
+    <None Include="..\3rd-party.txt" Pack="true" PackagePath="" />
+    <None Include="..\Readme.md" Pack="true" PackagePath="" />
+    <None Include="..\changelog.txt" Pack="true" PackagePath="" />
+    <None Include="..\.version" Pack="true" PackagePath="" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="..\tools\hMSBuild.bat">
+    <None Include="..\tools\hMSBuild.bat" Pack="true" PackagePath="tools\">
       <Visible>false</Visible>
-      <Pack>True</Pack>
-      <PackagePath>tools\</PackagePath>
     </None>
-    <None Include="..\tools\gnt.bat">
+    <None Include="..\tools\gnt.bat" Pack="true" PackagePath="tools\">
       <Visible>false</Visible>
-      <Pack>True</Pack>
-      <PackagePath>tools\</PackagePath>
     </None>
   </ItemGroup>
 

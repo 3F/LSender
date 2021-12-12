@@ -1,0 +1,50 @@
+﻿<Project>
+
+  <!-- Let's help to override something when it used as a submodule.
+       Or build with /p:property=value -->
+  <Import Project="..\redefine.props" Condition="Exists('..\redefine.props')" />
+  <Import Project="..\..\redefine.props" Condition="Exists('..\..\redefine.props')" />
+
+  <PropertyGroup>
+    <RootOutDir>bin\prj\</RootOutDir>
+    <RootObjDir>bin\obj\</RootObjDir>
+
+    <OsUnixLike>false</OsUnixLike>
+    <OsUnixLike Condition="$([MSBuild]::IsOsUnixLike())">true</OsUnixLike>
+
+    <NetStdTFM>netstandard2.0</NetStdTFM>
+    <NetStdTFM Condition="'$(SuppressNetStdTFM)' == 'true'"></NetStdTFM>
+
+    <!-- .NET Core Support Policy: https://dotnet.microsoft.com/platform/support/policy/dotnet-core -->
+    <NetCoreTFM>netcoreapp3.1;net6</NetCoreTFM>
+
+    <LSenderTFM>net40;net472;$(NetCoreTFM);$(NetStdTFM)</LSenderTFM>
+    <LSenderTFM Condition="'$(OsUnixLike)'=='true'">$(NetCoreTFM);$(NetStdTFM)</LSenderTFM>
+    <LSenderTFM Condition="'$(OverrideLSenderTFM)'!=''">$(OverrideLSenderTFM)</LSenderTFM>
+
+    <LSenderTestTFM>net472;$(NetCoreTFM)</LSenderTestTFM>
+    <LSenderTestTFM Condition="'$(OsUnixLike)'=='true'">$(NetCoreTFM)</LSenderTestTFM>
+    <LSenderTestTFM Condition="'$(OverrideLSenderTestTFM)'!=''">$(OverrideLSenderTestTFM)</LSenderTestTFM>
+
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <OutPrjDir>$(RootOutDir)$(MSBuildProjectName)\$(Configuration)\$(TargetFramework)\</OutPrjDir>
+    <IntermediateOutputPath>..\$(RootObjDir)$(MSBuildProjectName)\$(Configuration)\</IntermediateOutputPath>
+
+    <OutputPath>..\$(OutPrjDir)\</OutputPath>
+    <OutDir>$([MSBuild]::Escape($([System.IO.Path]::GetFullPath(`$([System.IO.Path]::Combine(`$(SolutionDir)`, `$(OutPrjDir)`))`))))</OutDir>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <IsNetCoreFamilyTarget>true</IsNetCoreFamilyTarget>
+    <IsNetCoreFamilyTarget Condition="$(TargetFramework.StartsWith('net4')) == 'true'">false</IsNetCoreFamilyTarget>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <DefineConstants Condition="'$(IsNetCoreFamilyTarget)' == 'true'">NETCORE;$(DefineConstants)</DefineConstants>
+    <DefineConstants Condition="'$(TargetFramework)' == 'netstandard2.0'">NETSTD20;NETSTD;$(DefineConstants)</DefineConstants>
+    <DefineConstants Condition="'$(TargetFramework)' == 'net40'">NET40;$(DefineConstants)</DefineConstants>
+  </PropertyGroup>
+
+</Project>
