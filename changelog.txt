@@ -1,11 +1,44 @@
+- - - - - - - - - - - - - - - - - - - - 
 LSender - https://github.com/3F/LSender
-_ _ _ _ 
+- - - - - - - - - - - - - - - - - - - - 
+
+[1.16] 2021.12.12
+
+    * FIXED: Fixed possible NullReferenceException when lambda, ~Anonymously Hosted DynamicMethods.
+    
+    * NEW: Improved vector implementation which should be twice as fast as the original StackTrace instancing.
+           
+           Note the following,
+           Actually it could be implemented even faster because only the vector matters in our case.
+           This however is not trivial task due to some CLR protections such as
+             ECall methods must be packaged into a system module when calling GetStackFramesInternal 
+             which in turn requires StackFrameHelper instance.
+           That's why it's still wrapped inside StackFrameHelper class.
+    
+    * CHANGED: Added LSR_FEATURE_S_VECTOR preprocessor directive to completely disable vectors 
+               if it is not planned to use.
+    
+    * CHANGED: New project structure for distribution using source code 
+                which makes it easier to split the repeater within the domain.
+                
+            For example,
+            ```
+              <PropertyGroup>
+                <LSenderExtIncSrc>..\LSender\src\</LSenderExtIncSrc>
+                <DefineConstants>LSR_FEATURE_S_VECTOR;$(DefineConstants)</DefineConstants>
+              </PropertyGroup>
+              <Import Project="$(LSenderExtIncSrc)src.targets" />
+            ```
+
 
 [1.15] 2019.10.21
 
     * NEW: Tracking via vector field (Vinf) inside MsgArgs.
+    
     * NEW: +`bool MsgArgs.At(params string[] map)`: Are there any suitable directions in the vector.
+    
     * NEW: +`bool MsgArgs.At(string name)`: Is there a suitable assembly in the vector.
+    
     * CHANGED: `Message` sealed class has been renamed to `MsgArgs`.
     
 [1.14] 2019.09.23
